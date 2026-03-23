@@ -13,7 +13,7 @@ def get_test_keyboard():
 def get_after_answer_keyboard():
     keyboard = InlineKeyboardMarkup()
     keyboard.add(
-        InlineKeyboardButton("Продолжить", callback_data="continue_random"),
+        InlineKeyboardButton("Продолжить", callback_data="continue"),
         InlineKeyboardButton("В начало", callback_data="to_start")
     )
     return keyboard

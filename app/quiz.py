@@ -1,5 +1,6 @@
 import random
 import re
+import unicodedata
 
 from app.common import user_state, TRUE_WORDS, user_mode, FALSE_WORDS
 from app.words import get_random_word
@@ -51,4 +52,24 @@ def prepare_ege_question(chat_id):
 
 
 def parse_ege_answer(text):
+    if not text.replace(" ", "").isdigit():
+        return False
+
     return sorted(set(re.findall(r"[1-5]", text)))
+
+
+def validate_random_answer(text):
+   text = text.strip()
+
+   if len(text.split()) != 1:
+       return "one_word"
+
+   for char in text:
+       try:
+           if 'CYRILLIC' not in unicodedata.name(char).upper():
+               return "cyrillic_only"
+
+       except ValueError:
+           return "cyrillic_only"
+
+   return "ok"

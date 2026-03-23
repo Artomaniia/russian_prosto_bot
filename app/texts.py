@@ -1,20 +1,13 @@
-def start_message(username):
-    return f"""
-🧡Привет, {username}!
-
-💙Я помогу тебе изучить ударения для подготовки к ОГЭ/ЕГЭ по русскому языку!
-
-✨ Хочешь сразу приступить? Все задания доступны по команде /test!
-"""
-
-
 CHOOSE_MODE = "Выбери режим"
 WRITE_ANSWER = "Напиши правильный вариант."
 UNKNOWN_MESSAGE = "Не могу ответить на такой запрос"
 START_DESCRIPTION = "Запустить бота"
 TEST_DESCRIPTION = "Пройти все задания"
 HELP_DESCRIPTION = "Помощь"
-
+USE_DIGITS = "Введи номера от 1 до 5, например: <b>135</b>"
+USE_ONE_WORD = "Введи только одно слово в качестве ответа"
+USE_LETTERS = "Вводи только символы кириллицы"
+NO_CHOSEN_MODE = "⚠️ Режим не определён. Пожалуйста, выбери нужный вариант ещё раз."
 HELP_COMMAND = """
 💡 Помощь
 
@@ -34,16 +27,18 @@ HELP_COMMAND = """
 """
 
 
+def start_message(username):
+    return f"""
+🧡Привет, {username}!
+
+💙Я помогу тебе изучить ударения для подготовки к ОГЭ/ЕГЭ по русскому языку!
+
+✨ Хочешь сразу приступить? Все задания доступны по команде /test!
+"""
+
+
 def random_question_message(word):
     return f"📝 Поставь ударение:<b><i>\n\n{word}\n\n</i></b>{WRITE_ANSWER}"
-
-
-def success_message(correct_answers):
-    return f"✅ Верно!\nПравильный ответ: <b><i>{', '.join(correct_answers)}</i></b>"
-
-
-def fail_message(correct_answers):
-    return f"❌ Неверно.\nПравильный ответ: <b><i>{', '.join(correct_answers)}</i></b>"
 
 
 def ege_question_message(lines):
@@ -52,3 +47,11 @@ def ege_question_message(lines):
             "Ответ можно прислать так: <b><i>1 3 5</i></b> или <b><i>135</i></b>\n\n"
             + "\n".join(lines)
     )
+
+
+def success_message(correct_answers):
+    return f"✅ Верно!\nПравильный ответ: <b><i>{', '.join(correct_answers)}</i></b>"
+
+
+def fail_message(correct_answers):
+    return f"❌ Неверно.\nПравильный ответ: <b><i>{', '.join(correct_answers)}</i></b>"

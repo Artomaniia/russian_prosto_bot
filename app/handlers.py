@@ -49,69 +49,78 @@ def register_handlers(bot):
         bot.answer_callback_query(call.id)
         clear_state(chat_id)
 
-        if call.data == "random":
-            question = prepare_random_question(chat_id)
-            bot.send_message(chat_id, random_question_message(question), parse_mode="HTML")
-
-        elif call.data == "continue_random":
-            if get_current_mode(chat_id) == "ege":
-                question = prepare_ege_question(chat_id)
-                bot.send_message(chat_id, ege_question_message(question), parse_mode="HTML")
-            else:
+        match call.data:
+            case "random":
                 question = prepare_random_question(chat_id)
                 bot.send_message(chat_id, random_question_message(question), parse_mode="HTML")
 
-        elif call.data == "to_start":
-            bot.send_message(chat_id, start_message(first_name))
+            case "continue":
+                match get_current_mode(chat_id):
+                    case "ege":
+                        question = prepare_ege_question(chat_id)
+                        bot.send_message(chat_id, ege_question_message(question), parse_mode="HTML")
+                    case "random":
+                        question = prepare_random_question(chat_id)
+                        bot.send_message(chat_id, random_question_message(question), parse_mode="HTML")
+                    case _:
+                        bot.send_message(chat_id, NO_CHOSEN_MODE, parse_mode="HTML")
 
-        elif call.data == "ege":
-            question = prepare_ege_question(chat_id)
-            bot.send_message(chat_id, ege_question_message(question), parse_mode="HTML")
+            case "to_start":
+                bot.send_message(chat_id, start_message(first_name))
+
+            case "ege":
+                question = prepare_ege_question(chat_id)
+                bot.send_message(chat_id, ege_question_message(question), parse_mode="HTML")
 
     @bot.message_handler(func=lambda message: has_active_question(message.chat.id))
     def process_user_answer(message):
         chat_id = message.chat.id
         correct_answers = get_current_answers(chat_id)
 
-        if get_current_mode(chat_id) == "ege":
-            user_answers = parse_ege_answer(message.text)
+        match get_current_mode(chat_id):
+            case "ege":
+                user_answer = parse_ege_answer(message.text)
 
-            if not user_answers:
-                bot.send_message(
-                    chat_id,
-                    "Введи номера от 1 до 5, например: <b>1 3 5</b>",
-                    parse_mode="HTML"
-                )
-                return
+                if not user_answer:
+                    bot.send_message(chat_id, USE_DIGITS, parse_mode="HTML")
+                    return
 
-            if user_answers == correct_answers:
-                bot.send_message(
-                    chat_id,
-                    success_message(correct_answers),
-                    reply_markup=get_after_answer_keyboard(), parse_mode="HTML"
-                )
-            else:
-                bot.send_message(
-                    chat_id,
-                    fail_message(correct_answers),
-                    reply_markup=get_after_answer_keyboard(), parse_mode="HTML"
-                )
+                if user_answer == correct_answers:
+                    bot.send_message(
+                        chat_id,
+                        success_message(correct_answers),
+                        reply_markup=get_after_answer_keyboard(), parse_mode="HTML"
+                    )
+                else:
+                    bot.send_message(
+                        chat_id,
+                        fail_message(correct_answers),
+                        reply_markup=get_after_answer_keyboard(), parse_mode="HTML"
+                    )
 
-            clear_state(chat_id)
-            return
+            case "random":
+                result = validate_random_answer(message.text)
 
-        if is_word_correct(message.text, correct_answers):
-            bot.send_message(
-                chat_id,
-                success_message(correct_answers),
-                reply_markup=get_after_answer_keyboard(), parse_mode="HTML"
-            )
-        else:
-            bot.send_message(
-                chat_id,
-                fail_message(correct_answers),
-                reply_markup=get_after_answer_keyboard(), parse_mode="HTML"
-            )
+                if result == "one_word":
+                    bot.send_message(chat_id, USE_ONE_WORD, parse_mode="HTML")
+                    return
+
+                if result == "cyrillic_only":
+                    bot.send_message(chat_id, USE_LETTERS, parse_mode="HTML")
+                    return
+
+                if is_word_correct(message.text, correct_answers):
+                    bot.send_message(
+                        chat_id,
+                        success_message(correct_answers),
+                        reply_markup=get_after_answer_keyboard(), parse_mode="HTML"
+                    )
+                else:
+                    bot.send_message(
+                        chat_id,
+                        fail_message(correct_answers),
+                        reply_markup=get_after_answer_keyboard(), parse_mode="HTML"
+                    )
 
         clear_state(chat_id)
 
