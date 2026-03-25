@@ -24,7 +24,7 @@ def register_handlers(bot):
         bot.send_message(chat_id, start_message(first_name))
 
     @bot.message_handler(commands=['help'])
-    def start(message):
+    def help(message):
         chat_id = message.chat.id
         clear_state(chat_id)
 
