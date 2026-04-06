@@ -47,6 +47,6 @@ def success_message(correct_answers: list[str]) -> str:
 
 def fail_message(correct_answers: list[str]) -> str:
     return (
-        f"Ничего страшного, такое бывает 🌿\n"
+        f"Ошибка! Ничего страшного, такое бывает 🌿\n"
         f"Правильный ответ: {', '.join(correct_answers)}"
     )
