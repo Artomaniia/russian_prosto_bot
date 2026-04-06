@@ -1,6 +1,7 @@
 import json
 import random
 
+WordMap = dict[str, list[str]]
 
 def get_random_word(words):
     question, answers = random.choice(list(words.items()))
